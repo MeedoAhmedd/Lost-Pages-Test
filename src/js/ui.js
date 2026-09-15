@@ -183,7 +183,7 @@ var MenuAudio = (function(){
 
   function ensure(){
     if(piano) return piano;
-    piano = new Audio('assets/audio/alex-morgan-piano-background-gentle-study-flow-578490.mp3');
+    piano = new Audio('assets/audio/music/alex-morgan-piano-background-gentle-study-flow-578490.mp3');
     piano.loop = true;
     piano.preload = 'auto';
     piano.volume = 0;

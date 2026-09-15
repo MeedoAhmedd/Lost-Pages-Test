@@ -688,12 +688,12 @@ var AmbientSound = (function(){
 // ============================================================
 var Music = (function(){
   var TRACKS = [
-    { file:'assets/audio/alex-morgan-piano-background-gentle-study-flow-578490.mp3', name:'Gentle Study Flow', by:'Alex Morgan' },
-    { file:'assets/audio/relaxingtime-lullaby-music-vol20-186394.mp3',               name:'Lullaby, Vol. 20',  by:'RelaxingTime' },
-    { file:'assets/audio/lofi_hour-in-the-room-when-the-rain-pouring-117209.mp3',    name:'Rain on the Window', by:'Lofi Hour' },
-    { file:'assets/audio/celeronbeats-gentle-night-rain-for-sleep-574972.mp3',       name:'Gentle Night Rain',  by:'CeleronBeats' },
-    { file:'assets/audio/yokaicircle-arancina-ambient-yokai-raining-386502.mp3',     name:'Ambient Rain',       by:'Yokai Circle' },
-    { file:'assets/audio/lorenzobuczek-sleepy-rain-116521.mp3',                      name:'Sleepy Rain',        by:'Lorenzo Buczek' }
+    { file:'assets/audio/music/alex-morgan-piano-background-gentle-study-flow-578490.mp3', name:'Gentle Study Flow', by:'Alex Morgan' },
+    { file:'assets/audio/music/relaxingtime-lullaby-music-vol20-186394.mp3',               name:'Lullaby, Vol. 20',  by:'RelaxingTime' },
+    { file:'assets/audio/music/lofi_hour-in-the-room-when-the-rain-pouring-117209.mp3',    name:'Rain on the Window', by:'Lofi Hour' },
+    { file:'assets/audio/music/celeronbeats-gentle-night-rain-for-sleep-574972.mp3',       name:'Gentle Night Rain',  by:'CeleronBeats' },
+    { file:'assets/audio/music/yokaicircle-arancina-ambient-yokai-raining-386502.mp3',     name:'Ambient Rain',       by:'Yokai Circle' },
+    { file:'assets/audio/music/lorenzobuczek-sleepy-rain-116521.mp3',                      name:'Sleepy Rain',        by:'Lorenzo Buczek' }
   ];
   var audio = null, idx = -1, vol = 0.6, playing = false;
 
