@@ -26,16 +26,19 @@ Lost Pages/
 │   ├── index.html
 │   ├── css/
 │   │   ├── base.css       room/HUD/layout styles
-│   │   └── ui.css         menus, notebook, panels, buttons
+│   │   ├── ui.css         menus, notebook, panels, buttons
+│   │   └── piano.css      the full-screen piano overlay
 │   ├── js/
 │   │   ├── scene.js       renderer, camera, lighting, materials, furniture, Edit Mode
 │   │   ├── interactions.js  character, movement, collision, E/F interactions, sleep poses
 │   │   ├── audio.js       ambience engine + music player
+│   │   ├── piano.js       piano furniture + full-screen instrument (play mode only — see below)
 │   │   ├── ui.js          save-slot system, main menu
 │   │   └── main.js        render loop, resize handling, quality watchdog
 │   └── assets/
 │       └── audio/
-│           └── music/     the 6 licensed ambience/music tracks
+│           ├── music/     the 6 licensed ambience/music tracks
+│           └── piano/     (not created yet — see "Piano sound" below)
 │
 └── builds/                ← GENERATED OUTPUT ONLY. Never hand-edit these.
     ├── web/
@@ -60,6 +63,57 @@ future packaging step will drop generated web/Windows/Android/iOS output.
 Right now they're empty placeholders (`.gitkeep` files) — no build tooling
 exists yet, by design, since the project is still in active
 development/testing.
+
+---
+
+## The piano
+
+A real playable piano exists in the room now: an upright piano + bench built
+from procedural geometry (same style as every other object in `scene.js`),
+placed against the right wall — the one wall that had nothing on it. Walk up
+to it, press `E`, and a full-screen instrument opens, exactly like the
+notebook (room freezes, `gameActive = false`, closing returns you to exactly
+where you were).
+
+**What works:** mouse/touch and computer-keyboard play (`A S D F G H J K` =
+white keys C–C, `W E T Y U` = black keys), octave shift (`+`/`–`, one octave
+rendered at a time so it stays usable on a phone), a volume slider, mute, and
+a soft/normal/strong intensity control (a deliberately simple stand-in for
+velocity — real MIDI velocity from a hardware keyboard could later replace
+this scalar without restructuring anything, since it all flows through one
+`playNote(id, semitone)` function). Octave/volume/mute settings persist per
+save slot (`Piano.snapshot()`/`Piano.restore()`, wired into `ui.js` the same
+way `AmbientSound` and `Music` already are).
+
+**What doesn't exist yet, on purpose:** recording, saved melodies, Learn
+Mode, and the personal MP3 player are all explicitly out of scope for this
+pass — Play Mode only, per the brief. Nothing was implemented toward them
+beyond structuring `playNote()` so a future recorder can hook into the exact
+same function a real key-press calls.
+
+### Piano sound — what's actually needed for the real thing
+
+No real piano samples exist in this project, and none were downloaded here.
+Right now every note is synthesized (a small stack of detuned/harmonic
+oscillators through a struck-string-shaped envelope in `playNote()` in
+`src/js/piano.js`) — genuinely warmer than a single bare oscillator, but
+still a placeholder, not the target sound.
+
+To swap in real samples:
+1. Create `src/assets/audio/piano/`.
+2. Add one recorded note per octave (a reasonable balance of quality vs. size
+   is one sample every 3–4 semitones — e.g. `piano-C3.mp3`, `piano-Eb3.mp3`,
+   `piano-Gb3.mp3`, `piano-A3.mp3`, `piano-C4.mp3`, …), each a clean single
+   note recorded (or licensed) for commercial use, with its license recorded
+   in `ASSET_LICENSES/README.md` before anything ships.
+3. Replace the body of `playNote()` with buffer playback: load each file into
+   an `AudioBuffer` once, then on each note pick the nearest sampled pitch and
+   play it via `AudioBufferSourceNode.playbackRate` pitch-shifted to the exact
+   target frequency (the comment directly above `playNote()` in `piano.js`
+   sketches this out).
+
+No other file needs to change for that swap — the overlay, keyboard mapping,
+and save/restore logic are all independent of how a note actually makes sound.
 
 ---
 
@@ -159,20 +213,61 @@ frame-rate-independence and interaction-correctness requirements:
   deriving that value from the duvet's exact box geometry. Nothing invented,
   nothing to fix.
 
+### 5. Piano — Play Mode foundation (new files: `src/js/piano.js`, `src/css/piano.css`)
+
+Added the first phase of the piano feature: furniture + a full-screen
+playable instrument. See the dedicated "The piano" section above for the
+full breakdown. In short — new files `js/piano.js` and `css/piano.css`;
+small additions to `index.html` (the `#piano` overlay markup, a `<link>`,
+a `<script>` tag) and `ui.js` (three one-line additions: `piano:
+Piano.snapshot()` in `saveSlot()`, `Piano.restore(...)` in `enterSlot()`,
+`Piano.close()` in `backToMenu()`). Nothing in `scene.js` or
+`interactions.js` was edited — the piano furniture and its interaction
+point are added by `piano.js` itself (`box()`/`mat()` calls reusing scene.js's
+existing helpers, `INTERACTS.push(...)` reusing interactions.js's existing
+registry) rather than editing those files directly, so the feature stays
+self-contained and easy to review or remove as one unit.
+
+**Verification performed:** `node --check` passed on every touched JS file;
+confirmed via `curl` that the dev server serves `index.html`, `piano.js`,
+and `piano.css` with `200 OK`; confirmed no duplicate HTML ids and balanced
+`<div>` tags; manually traced the collision math (the piano's footprint is
+roughly x:[4.93, 5.48], z:[-2.08, -0.73]) against every other collider in
+the room (TV console, desk, bed, couch) to confirm zero overlap; traced the
+`gameActive`/`editing`/`nbOpen` guard logic to confirm the piano can't open
+while the notebook is open or during Edit Mode, and that pressing movement
+keys while the piano is open is inert (movement is gated on `gameActive`,
+which the piano sets to `false`, exactly like the notebook).
+
+**Not verified:** no browser tool was available in this session to actually
+load the page and look at it — no screenshot, no live console check, no
+confirmation the synthesized notes actually sound reasonable, no confirmation
+the piano furniture actually looks right from the fixed camera or that its
+placement reads well in the composition. Everything above is static
+code-level verification, not a substitute for actually seeing and hearing it
+run. This needs a real check before calling Play Mode done.
+
 ---
 
 ## Known gaps / what's next
 
-- **No rendered visual verification yet.** All lighting/material reasoning
-  above was done by reading the code (colors, intensities, material
-  roughness values) — nobody has actually looked at a rendered screenshot
-  of the current state. That's the next thing to do before going further
-  into composition/detail-pass work.
+- **No rendered visual verification yet, for anything in this repo.** All
+  lighting/material/piano reasoning was done by reading code — nobody has
+  actually looked at a screenshot or heard the piano's sound. This is the
+  single most important next step before any further visual or feature work.
 - **`scene.js` is still one large file.** Splitting it (setup/camera →
   materials → furniture → Edit Mode) is planned but not done.
 - **Camera composition, room architecture, detail pass, character visual
   integration** (context doc Phases 2, 3, 6, 7, 8) haven't started — they
   need rendered verification to do responsibly.
+- **Piano placement (against the right wall, x≈5.2, z≈-1.4) is a reasonable,
+  non-colliding guess, not a composition decision** — it was chosen because
+  that wall was completely empty, not because anyone has seen how it looks
+  from the fixed camera. May need to move once it's actually visible.
+- **Piano sound is a synthesized placeholder**, not real samples — see "The
+  piano" section above for exactly what's needed to replace it.
+- **Piano Play Mode only** — no recording, no saved melodies, no Learn Mode,
+  no MP3 player. Deliberately out of scope for this pass.
 - **`ASSET_LICENSES/README.md`** has the 6 current audio tracks logged with
   their credited artist names, but actual license terms are still `TBD` —
   needs to be tracked down before any commercial release.

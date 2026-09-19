@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/ui.css">
+<link rel="stylesheet" href="css/piano.css">
 </head>
 <body>
 
@@ -113,6 +114,31 @@
   </div>
 </div>
 
+<div id="piano">
+  <div class="pn-amb"></div>
+  <div class="pn-vig"></div>
+  <div class="pn-panel">
+    <div class="pn-head">
+      <div class="pn-title">Piano</div>
+      <div class="pn-controls">
+        <button type="button" id="pnOctDown" class="pn-oct">–</button>
+        <div class="pn-octlbl" id="pnOctLbl">Octave 4</div>
+        <button type="button" id="pnOctUp" class="pn-oct">+</button>
+        <div class="pn-vol"><span>volume</span><input type="range" id="pnVol" min="0" max="100" value="70"></div>
+        <div class="pn-intensity" id="pnIntensity">
+          <button type="button" data-i="soft">soft</button>
+          <button type="button" data-i="normal" class="active">normal</button>
+          <button type="button" data-i="strong">strong</button>
+        </div>
+        <button type="button" id="pnMute" class="pn-mute">🔊</button>
+        <button type="button" id="pnClose" class="pn-close">close</button>
+      </div>
+    </div>
+    <div class="pn-keyboard" id="pnKeyboard"></div>
+    <div class="pn-maphint">A S D F G H J K &nbsp;=&nbsp; white keys &nbsp;·&nbsp; W E T Y U &nbsp;=&nbsp; black keys &nbsp;·&nbsp; Esc to close</div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 <script>
 if(!window.THREE){
@@ -125,6 +151,7 @@ var THREE = window.THREE;
 <script src="js/scene.js"></script>
 <script src="js/interactions.js"></script>
 <script src="js/audio.js"></script>
+<script src="js/piano.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>
 </body>

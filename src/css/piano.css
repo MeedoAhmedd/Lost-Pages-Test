@@ -1,0 +1,122 @@
+/* ============================================================
+   PIANO.CSS — the full-screen instrument overlay.
+   Deliberately mirrors #notebook's structure/palette (dark radial
+   background, warm subtle glow, Caveat/Kalam accents, cream pill
+   buttons) so it reads as the same game, not a bolted-on widget.
+   ============================================================ */
+
+#piano{
+  position:fixed;inset:0;z-index:60;display:none;
+  background:radial-gradient(120% 120% at 50% 25%, #1c1520 0%, #0b0910 72%);
+  align-items:center;justify-content:center;
+  opacity:0;transition:opacity .5s ease;
+}
+#piano.show{display:flex;opacity:1}
+#piano .pn-amb{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(55% 45% at 50% 62%, rgba(255,200,140,.10), transparent 70%)}
+#piano .pn-vig{position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 260px 110px rgba(0,0,0,.78)}
+
+.pn-panel{
+  position:relative;width:min(94vw,980px);
+  display:flex;flex-direction:column;gap:18px;
+  filter:drop-shadow(0 40px 90px rgba(0,0,0,.6));
+}
+
+.pn-head{
+  display:flex;align-items:center;flex-wrap:wrap;gap:14px;
+  padding:14px 18px;border-radius:16px;
+  background:rgba(20,17,28,.78);border:1px solid rgba(255,255,255,.1);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+}
+.pn-title{
+  font-family:'Caveat',cursive;font-size:clamp(24px,3vw,32px);color:#f2ece0;
+  margin-right:auto;
+}
+.pn-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+
+.pn-oct{
+  width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:16px;font-weight:700;
+  color:#efe9e2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+}
+.pn-oct:hover{background:rgba(255,255,255,.16)}
+.pn-octlbl{font-size:12px;color:rgba(240,235,228,.7);min-width:74px;text-align:center}
+
+.pn-vol{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(240,235,228,.6)}
+.pn-vol input{width:90px;accent-color:#e6c99b}
+
+.pn-intensity{display:flex;gap:4px;background:rgba(255,255,255,.05);padding:3px;border-radius:9px}
+.pn-intensity button{
+  padding:5px 10px;border-radius:7px;cursor:pointer;font-size:11px;
+  color:rgba(240,235,228,.7);background:transparent;border:0;
+}
+.pn-intensity button.active{background:rgba(243,230,201,.85);color:#1a1622;font-weight:600}
+
+.pn-mute, .pn-close{
+  padding:7px 14px;border-radius:999px;cursor:pointer;font-size:13px;
+  color:#efe9e2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+}
+.pn-close{background:none;border:0;color:rgba(240,235,228,.6)}
+.pn-close:hover{color:#f2ece0}
+.pn-mute:hover{background:rgba(255,255,255,.16)}
+
+/* ---- the keyboard itself ---- */
+.pn-keyboard{
+  position:relative;width:100%;height:min(30vh,220px);
+  background:linear-gradient(180deg,#151016,#0d0a10);
+  border-radius:14px;border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 20px 50px rgba(0,0,0,.5), inset 0 2px 10px rgba(0,0,0,.4);
+  padding:10px;
+}
+.pn-key{
+  position:absolute;top:10px;bottom:10px;
+  border-radius:0 0 7px 7px;cursor:pointer;user-select:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  transition:transform .05s ease, filter .1s ease;
+}
+.pn-white{
+  background:linear-gradient(180deg,#f4efe4,#e2d8c4);
+  border:1px solid rgba(0,0,0,.25);border-top:0;
+  box-shadow:inset 0 -6px 10px rgba(0,0,0,.08);
+  z-index:1;padding-bottom:10px;
+}
+.pn-white.pressed{
+  background:linear-gradient(180deg,#e6c99b,#d9b877);
+  transform:translateY(2px);
+}
+.pn-black{
+  top:10px;height:60%;
+  background:linear-gradient(180deg,#2a2620,#0c0a08);
+  border:1px solid rgba(0,0,0,.5);
+  box-shadow:0 6px 14px rgba(0,0,0,.5);
+  z-index:2;padding-bottom:8px;
+}
+.pn-black.pressed{
+  background:linear-gradient(180deg,#4a3f2e,#1c1712);
+  transform:translateY(2px);
+}
+.pn-klabel{font-family:'Caveat',cursive;font-size:16px;color:rgba(30,25,20,.55);margin-bottom:2px}
+.pn-kmap{
+  font-size:10px;letter-spacing:.5px;font-weight:700;
+  color:rgba(30,25,20,.4);
+}
+.pn-black .pn-kmap{color:rgba(240,235,228,.55)}
+
+.pn-maphint{
+  text-align:center;font-size:11px;color:rgba(240,235,228,.4);
+  letter-spacing:.3px;
+}
+
+body.playingPiano #profile,body.playingPiano #charCard,body.playingPiano #hint,
+body.playingPiano #joy,body.playingPiano #editBtn,body.playingPiano #ambBtn,
+body.playingPiano #nbPrompt,body.playingPiano #actPrompt{display:none!important}
+
+/* ---- mobile landscape: keyboard fills most of the width, controls stay reachable ---- */
+@media (hover:none) and (pointer:coarse){
+  .pn-panel{width:96vw}
+  .pn-head{padding:10px 12px;gap:8px}
+  .pn-title{font-size:20px;margin-right:6px}
+  .pn-keyboard{height:min(38vh,180px)}
+  .pn-vol input{width:64px}
+  .pn-maphint{display:none}   /* keyboard-mapping hint is meaningless with no physical keyboard */
+}

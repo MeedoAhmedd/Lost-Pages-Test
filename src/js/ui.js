@@ -26,6 +26,7 @@ function saveSlot(){
     notebook: { answers: nbAnswers, page: nbIndex, furthest: nbFurthest },
     ambient: AmbientSound.snapshot(),
     music: Music.snapshot(),
+    piano: Piano.snapshot(),
     visits: prev.visits || 1,
     updated: Date.now()
   };
@@ -122,6 +123,7 @@ function enterSlot(i){
     AmbientSound.restore(s.ambient);
   }
   if(s && s.music) Music.restore(s.music);
+  Piano.restore(s && s.piano);
   updateAmbBtn();
   // mark visited + persist
   all['slot'+i] = {
@@ -149,6 +151,7 @@ function enterSlot(i){
 function backToMenu(){
   saveSlot();
   if(nbOpen) closeNotebook();
+  Piano.close();
   if(editing) closeEdit();
   if(seated){ seated = null; seatBlend = 0; }
   restPhraseEl.classList.remove('show');
